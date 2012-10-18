@@ -6,4 +6,4 @@ points :: GLfloat
 points = 12
 
 bound :: (Num a) => a
-bound = 1000
+bound = 10000

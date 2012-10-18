@@ -29,7 +29,6 @@ applyVelocity (CelestialObject r position velocity) =
 	CelestialObject r (add position velocity) velocity
 
 prepRenderCelestial (CelestialObject _ position _) = prepRenderPos position
---scaleByBounds (Vertex3 x y z) = Vertex3 (x/bound) (y/bound) (z/bound)
 scaleByBounds (Vertex3 x y z) = Vertex3 (x/bound) (y/bound) (z/bound)
 
 data State = State [CelestialObject] deriving (Show)
@@ -42,7 +41,13 @@ sampleCell1 = CelestialObject 1 (Vector 0 0) (Vector 10 10)
 sampleCell2 = CelestialObject 1 (Vector 0 0) (Vector (-10) 10)
 sampleCell3 = CelestialObject 1 (Vector 0 0) (Vector 10 (-10))
 sampleCell4 = CelestialObject 1 (Vector 0 0) (Vector (-10) (-10))
-sampleState1 = State [sampleCell1, sampleCell2, sampleCell3, sampleCell4]
+
+sampleCell10 = CelestialObject 1 (Vector 0 0) (Vector 0 10)
+sampleCell20 = CelestialObject 1 (Vector 0 0) (Vector 10 0)
+sampleCell30 = CelestialObject 1 (Vector 0 0) (Vector 0 (-10))
+sampleCell40 = CelestialObject 1 (Vector 0 0) (Vector (-10) 0)
+sampleState1 = State [sampleCell1, sampleCell2, sampleCell3, sampleCell4,
+	sampleCell10, sampleCell20, sampleCell30, sampleCell40]
 
 x -: f = f x
 
