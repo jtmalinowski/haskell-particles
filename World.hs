@@ -19,11 +19,24 @@ distanceBetween a b = value $ sub (getPosition a) (getPosition b)
 gravConst  = 1
 
 --forceBetween :: (CelestialObject a) => a -> a -> Force
-forceBetween celA celB =
+scalarForceBetween celA celB =
 	let
 		massA = getMass celA
 		massB = getMass celB
 	in gravConst * (massA * massB) / (distanceBetween celA celB)
+
+--from A to B
+vectorForceBetween celA celB =
+	let
+		posA = getPosition celA
+		posB = getPosition celB
+	in sub posB posA
+
+vectorBetween celA celB =
+	let
+		normalized = normalize' $ vectorForceBetween celA celB
+		factor = scalarForceBetween celA celB
+	in scalarMult factor normalized
 
 applyVelocity (CelestialObject r position velocity) =
 	CelestialObject r (add position velocity) velocity
@@ -49,7 +62,8 @@ sampleCell40 = CelestialObject 1 (Vector 0 0) (Vector (-10) 0)
 sampleState1 = State [sampleCell1, sampleCell2, sampleCell3, sampleCell4,
 	sampleCell10, sampleCell20, sampleCell30, sampleCell40]
 
-x -: f = f x
+gravCell1 = CelestialObject 1 (Vector 10 0) (Vector 0 0)
+gravCell2 = CelestialObject 1 (Vector (-10) 0) (Vector 0 0)
 
 --TODO
 --1. Set world bounds
