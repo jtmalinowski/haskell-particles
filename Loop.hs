@@ -2,6 +2,7 @@ import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
 
 import ParticlesConfig
+import Primitives
 import World
 
 genPoints :: (Ord a, Floating a) => [a] -> [(a,a,a)]
@@ -27,13 +28,13 @@ main = do
 	reshapeCallback $= Just reshape
 
 	--Step based animation
-	addTimerCallback 25 $ drawNext (sampleState1 -: tick)
+	addTimerCallback 25 $ drawNext (world1 -: tick)
 
 	mainLoop
 
 display = do
 	clear [ColorBuffer]
-	renderPrimitive Points $ mapM_ (\v3->vertex$v3) $ sampleState1 -: prepRenderState
+	renderPrimitive Points $ mapM_ (\v3->vertex$v3) $ world1 -: prepRenderState
 	flush
 
 drawNext state = do

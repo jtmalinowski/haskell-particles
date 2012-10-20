@@ -1,12 +1,13 @@
 module Primitives where
 import Graphics.Rendering.OpenGL as OpenGL
 
-data (Num a) => Vector a = Vector a a
+data (Num a) => Vector a = Vector a a deriving (Eq)
 
 add (Vector xA yA) (Vector xB yB) = Vector (xA + xB) (yA + yB)
 sub (Vector xA yA) (Vector xB yB) = Vector (xA - xB) (yA - yB)
 opposite (Vector a b) = Vector (-a) (-b)
 value (Vector x y) = sqrt $ x**2 + y**2
+normalize' vector@(Vector 0.0 0.0) = vector
 normalize' vector@(Vector x y) = Vector (x/len) (y/len) where len = value vector
 scalarMult z (Vector x y) = Vector (x*z) (y*z)
 
