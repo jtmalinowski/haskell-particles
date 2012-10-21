@@ -55,6 +55,8 @@ gravityBetween celA celB =
 		velocity = scalarMult (1.0/massA) force
 	in velocity
 
+applyPosition vector (CelestialObject r position velocity) =
+	CelestialObject r (add vector position) velocity
 applyVelocity (CelestialObject r position velocity) =
 	CelestialObject r (add position velocity) (scalarMult 0.99 velocity)
 applyAcceleration acceleration (CelestialObject r position velocity) =
@@ -63,7 +65,7 @@ applyAcceleration acceleration (CelestialObject r position velocity) =
 prepRenderCelestial (CelestialObject _ position _) = prepRenderPos position
 scaleByBounds (Vertex3 x y z) = Vertex3 (x/bound) (y/bound) (z/bound)
 
-data State = State [CelestialObject] deriving (Show)
+data State = State { getObjects :: [CelestialObject] }  deriving (Show)
 tick (State cels) = State $ monadComp cels
 	where
 		gravComp cel cells = do
@@ -94,12 +96,7 @@ sampleCell40 = CelestialObject 1 (Vector 0 0) (Vector (-10) 0)
 gravCell1 = CelestialObject 1 (Vector 10 0) (Vector 0 0)
 gravCell2 = CelestialObject 1 (Vector (-10) 0) (Vector 0 0)
 
-planet1 = CelestialObject 10 (Vector (-50.0) 0.0) (Vector 0.0 0.0)
-comet1 = CelestialObject 1 (Vector 100.0 100.0) (Vector 0.0 0.0)
-comet2 = CelestialObject 1 (Vector 100.0 100.0) (Vector (-0.3) (-0.3))
-world1 = State [planet1, comet1, comet2]
-
---TODO
---1. Set world bounds
---2. PoC Render moving celestials
---3. Ticking world physics
+planet1 = CelestialObject 20 (Vector (-50.0) 0.0) (Vector 0.0 0.0)
+world1 = State
+	(planet1:
+	[(CelestialObject 0.1 (Vector x y) (Vector 0.0 0.0)) | x <- [(-5)..5], y<- [(-5)..5]])

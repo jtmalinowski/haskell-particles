@@ -31,9 +31,10 @@ main = do
 
 	displayCallback $= display stateRef
 	reshapeCallback $= Just reshape
+	keyboardMouseCallback $= Just (keyboardMouse stateRef)
 
 	--Step based animation
-	addTimerCallback 25 $ drawNext stateRef
+	addTimerCallback 20 $ drawNext stateRef
 
 	mainLoop
 
@@ -48,8 +49,27 @@ drawNext stateRef = do
 	state <- readIORef stateRef
 	renderCelestials state
 	writeIORef stateRef $ state -: tick
-	addTimerCallback 25 $ drawNext stateRef
+	addTimerCallback 20 $ drawNext stateRef
 	flush
+
+moveCursorPlanet vector@(Vector _ _) stateRef = do
+	state <- readIORef stateRef
+	let (cursorPlanet:celestials) = getObjects state
+	let alteredCursorPlanet = applyPosition vector cursorPlanet
+	writeIORef stateRef $ State $ (alteredCursorPlanet:celestials)
+
+keyboardAct stateRef (SpecialKey KeyLeft) Down = do
+	moveCursorPlanet (Vector (-1.0) 0.0) stateRef
+keyboardAct stateRef (SpecialKey KeyRight) Down = do
+	moveCursorPlanet (Vector 1.0 0.0) stateRef
+keyboardAct stateRef (SpecialKey KeyDown) Down = do
+	moveCursorPlanet (Vector 0.0 (-1.0)) stateRef
+keyboardAct stateRef (SpecialKey KeyUp) Down = do
+	moveCursorPlanet (Vector 0.0 1.0) stateRef
+keyboardAct _ _ _ = do return ()
+
+keyboardMouse stateRef key state modifiers position = do
+	keyboardAct stateRef key state
 
 renderCelestials state =
 	let
