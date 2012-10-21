@@ -23,14 +23,17 @@ distanceBetween a b
 		len = value $ sub posA posB
 
 --f=G(M*m)/(r^2)
-gravConst  = 0.00005
+gravConst  = 0.0001
 
 --forceBetween :: (CelestialObject a) => a -> a -> Force
-scalarForceBetween celA celB =
-	let
+scalarForceBetween celA celB
+	| distance < 5 = forceFactor / (5)
+	| otherwise = forceFactor / distance
+	where
 		massA = getMass celA
 		massB = getMass celB
-	in gravConst * (massA * massB) / (distanceBetween celA celB)
+		distance = distanceBetween celA celB
+		forceFactor = gravConst * (massA * massB)
 
 --from A to B
 vectorForceBetween celA celB =
@@ -53,7 +56,7 @@ gravityBetween celA celB =
 	in velocity
 
 applyVelocity (CelestialObject r position velocity) =
-	CelestialObject r (add position velocity) velocity
+	CelestialObject r (add position velocity) (scalarMult 0.99 velocity)
 applyAcceleration acceleration (CelestialObject r position velocity) =
 	CelestialObject r position (add acceleration velocity)
 
@@ -91,13 +94,12 @@ sampleCell40 = CelestialObject 1 (Vector 0 0) (Vector (-10) 0)
 gravCell1 = CelestialObject 1 (Vector 10 0) (Vector 0 0)
 gravCell2 = CelestialObject 1 (Vector (-10) 0) (Vector 0 0)
 
-planet1 = CelestialObject 10 (Vector 0.0 0.0) (Vector 0.0 0.0)
+planet1 = CelestialObject 10 (Vector (-50.0) 0.0) (Vector 0.0 0.0)
 comet1 = CelestialObject 1 (Vector 100.0 100.0) (Vector 0.0 0.0)
-world1 = State [planet1, comet1]
+comet2 = CelestialObject 1 (Vector 100.0 100.0) (Vector (-0.3) (-0.3))
+world1 = State [planet1, comet1, comet2]
 
 --TODO
 --1. Set world bounds
 --2. PoC Render moving celestials
 --3. Ticking world physics
-
-ignore x = 0
