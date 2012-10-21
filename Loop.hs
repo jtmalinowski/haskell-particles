@@ -1,6 +1,8 @@
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLUT
 
+import Data.IORef
+
 import ParticlesConfig
 import Primitives
 import World
@@ -24,24 +26,36 @@ myPoints = genPoints [-points..points]
 main = do
 	(progname, _) <- getArgsAndInitialize
 	createWindow "Hello World"
-	displayCallback $= display
+
+	stateRef <- newIORef world1
+
+	displayCallback $= display stateRef
 	reshapeCallback $= Just reshape
 
 	--Step based animation
-	addTimerCallback 25 $ drawNext (world1 -: tick)
+	addTimerCallback 25 $ drawNext stateRef
 
 	mainLoop
 
-display = do
+display stateRef = do
 	clear [ColorBuffer]
-	renderPrimitive Points $ mapM_ (\v3->vertex$v3) $ world1 -: prepRenderState
+	state <- readIORef stateRef
+	renderCelestials state
 	flush
 
-drawNext state = do
+drawNext stateRef = do
 	clear [ColorBuffer]
-	renderPrimitive Points $ mapM_ (\v3->vertex$v3) $ state -: prepRenderState
-	addTimerCallback 5 $ drawNext (state -: tick)
+	state <- readIORef stateRef
+	renderCelestials state
+	writeIORef stateRef $ state -: tick
+	addTimerCallback 25 $ drawNext stateRef
 	flush
+
+renderCelestials state =
+	let
+		positions = state -: prepRenderState
+		vertexes = mapM_ (\v3->vertex$v3) positions
+	in renderPrimitive Points vertexes
 
 reshape s@(Size w h) = do
 	viewport $= (Position 0 0, s)
